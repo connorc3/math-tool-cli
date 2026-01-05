@@ -1,20 +1,6 @@
 from sympy import Eq, linsolve, solve, simplify
 
 def equations_equal(eq1: Eq, eq2: Eq) -> bool:
-    # # Check if both are constants
-
-    # symbols_set = list(eq1.free_symbols.union(eq2.free_symbols))
-
-    # # Handle constant equations
-    # if not symbols_set:
-    #     return simplify(eq1.lhs - eq1.rhs) == simplify(eq2.lhs - eq2.rhs)
-    
-    # x = symbols_set[0]
-
-    # sol1 = solve(eq1, x)
-    # sol2 = solve(eq2, x)
-
-    # return sol1 == sol2
     symbols_set = list(eq1.free_symbols.union(eq2.free_symbols))
 
     # Handle constants
