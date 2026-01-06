@@ -1,22 +1,24 @@
 from sympy import Eq, linsolve, solve, simplify
 
-def equations_equal(eq1: Eq, eq2: Eq) -> bool:
-    symbols_set = list(eq1.free_symbols.union(eq2.free_symbols))
+def equations_equal(prev: Eq, curr: Eq) -> bool:
+    # Get all symbols
+    symbols_set = list(prev.free_symbols.union(curr.free_symbols))
 
     # Handle constants
     if not symbols_set:
-        return simplify(eq1.lhs - eq1.rhs) == simplify(eq2.lhs - eq2.rhs)
+        return simplify(prev.lhs - prev.rhs) == simplify(curr.lhs - curr.rhs)
 
-    # Try using linsolve for linear systems
-    try:
-        sol1 = linsolve([eq1], symbols_set)
-        sol2 = linsolve([eq2], symbols_set)
-        return sol1 == sol2
-    except Exception:
-        # Fallback: check symbolic equivalence
-        expr1 = eq1.lhs - eq1.rhs
-        expr2 = eq2.lhs - eq2.rhs
-        return simplify(expr1 - expr2) == 0
+    if len(symbols_set) != 1:
+        raise ValueError("Only single-variable equations supported here")
+
+    x = symbols_set[0]
+
+    # Solve each equation for x
+    sol_prev = solve(prev, x)
+    sol_curr = solve(curr, x)
+
+    # Compare sets ignoring order
+    return set(sol_prev) == set(sol_curr)
 
 def find_first_error(equations: list[Eq]) -> int | None:
     for i in range(len(equations) - 1):

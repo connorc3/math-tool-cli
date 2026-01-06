@@ -1,8 +1,20 @@
-from sympy import Eq, sympify
+from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+from sympy import Eq
+
+transformations = standard_transformations + (implicit_multiplication_application,)
 
 def parse_equation(eq_str: str) -> Eq:
     if "=" not in eq_str:
         raise ValueError("Equation must contain '='")
-
     left, right = eq_str.split("=")
-    return Eq(sympify(left), sympify(right))
+    left_expr = parse_expr(left, transformations=transformations)
+    right_expr = parse_expr(right, transformations=transformations)
+    return Eq(left_expr, right_expr, evaluate=False)
+
+def extract_variable(eq: Eq):
+    vars = list(eq.free_symbols)
+
+    if len(vars) > 1:
+        raise ValueError("Multiple variables not supported")
+    
+    return vars[0]
